@@ -1,14 +1,18 @@
 const { model, Schema } = require("mongoose");
 
+const PreviewImageSchema = new Schema({
+  width: Number,
+  height: Number,
+  url: String,
+});
+
 const PreviewSchema = new Schema(
   {
     thumbail: {
-      type: String,
-      default: "",
+      type: PreviewImageSchema,
     },
     original: {
-      type: String,
-      default: "",
+      type: PreviewImageSchema,
     },
   },
   {

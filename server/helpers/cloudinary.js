@@ -49,8 +49,8 @@ async function uploadPostToCloudinary(videoBuffer, previewPicture) {
 
   const data = {
     video: video.value,
-    thumbail: thumbail.secure_url,
-    original: original.secure_url,
+    thumbail: thumbail,
+    original: original,
   };
 
   return data;

@@ -22,8 +22,8 @@
 .posts {
   display: flex;
   flex-wrap: wrap;
-  padding: 0 1rem;
-  gap: 5px;
+  align-items: self-start;
+  gap: 8px;
 }
 
 .post-item {
@@ -31,7 +31,7 @@
   flex-shrink: 1;
 }
 .post-item:not(:last-child) {
-  flex-basis: calc((100% / 4) - 5px);
+  flex-basis: calc((100% / 4) - 8px);
 }
 
 .post-item:last-child {
@@ -48,6 +48,10 @@
   width: 100% !important;
   height: auto !important;
   border-radius: 8px;
+}
+
+.loaded {
+  filter: none !important;
 }
 
 .tags-input-container {

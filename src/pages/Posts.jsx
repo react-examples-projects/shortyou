@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import ReactPlayer from "react-player";
 import axios from "axios";
+import Post from "../components/Post";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
@@ -19,10 +19,12 @@ export default function Posts() {
         columns[columnIndex] = columns[columnIndex]
           ? [...columns[columnIndex], post]
           : [post];
+
         if (columnIndex === columnsCount - 1) {
           columnIndex = 0;
+        } else {
+          columnIndex++;
         }
-        columnIndex++;
       }
 
       setPosts(posts);
@@ -32,30 +34,17 @@ export default function Posts() {
   }, []);
 
   return (
-    <div className="mt-5  ">
+    <main
+      className="mt-5 mx-auto px-2"
+      style={{ maxWidth: "1300px", width: "100%" }}
+    >
       {posts.length > 0 && (
-        <div className="posts">
-          {
-            Object.entries(columns)?.map(([index, posts]) => (
-              <div className="post-item">
-                {posts?.map(({ url, width, height, _id }) => (
-                  <ReactPlayer
-                    id={_id}
-                    key={_id}
-                    url={url}
-                    preload="metadata"
-                    className="post"
-                    controls
-                    loop
-                  >
-                    Tu navegador no admite el elemento <code>video</code>.
-                  </ReactPlayer>
-                ))}
-              </div>
-            ))
-          }
-        </div>
+        <section className="posts">
+          {Object.entries(columns)?.map(([, posts]) => (
+            <Post posts={posts} />
+          ))}
+        </section>
       )}
-    </div>
+    </main>
   );
 }

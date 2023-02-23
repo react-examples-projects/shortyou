@@ -53,7 +53,18 @@ class PostController {
         title,
         description,
         tags,
-        preview: { thumbail, original },
+        preview: {
+          thumbail: {
+            width: thumbail.width,
+            height: thumbail.height,
+            url: thumbail.secure_url,
+          },
+          original: {
+            width: original.width,
+            height: original.height,
+            url: original.secure_url,
+          },
+        },
         assetId: asset_id,
         publicId: public_id,
         url: secure_url,
