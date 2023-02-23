@@ -18,8 +18,7 @@ async function uploadThumbail(thumbail) {
   const res = await cloudinary.uploader.upload(thumbail, {
     folder: "hackatoon_cloudinary/thumbails",
     resource_type: "image",
-    width: 50,
-    height: 50,
+    quality: 1,
   });
   return res;
 }
