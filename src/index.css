@@ -14,11 +14,16 @@
   box-sizing: border-box !important;
 }
 
+.title {
+  font-family: "Tilt Warp", cursive !important;
+}
+
 .posts {
   display: flex;
   flex-wrap: wrap;
   align-items: self-start;
-  gap: 8px;
+  gap: 10px;
+  margin-top: 5rem;
 }
 
 .post-item {
@@ -26,7 +31,7 @@
   flex-shrink: 1;
 }
 .post-item:not(:last-child) {
-  flex-basis: calc((100% / var(--columns)) - 8px);
+  flex-basis: calc((100% / var(--columns)) - 10px);
 }
 
 .post-item:last-child {

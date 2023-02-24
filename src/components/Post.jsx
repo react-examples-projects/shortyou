@@ -120,11 +120,12 @@ const VideoPlayerPost = ({
                 alignItems: "center",
               }}
             >
-              {tags.filter(Boolean).map((tag) => (
+              {tags.filter(Boolean).map((tag, i) => (
                 <Badge
                   color="gray"
                   size="xs"
                   variant="filled"
+                  key={tag + "-" + i}
                   sx={{ fontWeight: 400, letterSpacing: "1px" }}
                 >
                   #{tag}
@@ -176,7 +177,7 @@ export default function Post({ posts }) {
   return (
     <article className="post-item">
       {posts?.map((post) => (
-        <VideoPlayerPost {...post} />
+        <VideoPlayerPost key={post._id} {...post} />
       ))}
     </article>
   );
