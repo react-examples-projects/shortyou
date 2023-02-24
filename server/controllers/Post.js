@@ -7,6 +7,7 @@ class PostController {
   async getAll(req, res, next) {
     try {
       const posts = await PostModel.find({})
+        .sort({ createdAt: -1 })
         .select("-folder -fps -duration -updatedAt -__v")
         .lean();
       success(res, posts);
@@ -33,6 +34,7 @@ class PostController {
       }
 
       const { title, description, tags, ...body } = req.body;
+
       const { video, thumbail, original } = await uploadPostToCloudinary(
         videoBuffer,
         body.original

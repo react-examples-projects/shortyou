@@ -1,21 +1,16 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  --columns: 5;
+}
 
+* {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif !important;
+  margin: 0;
+  padding: 0;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-}
-
-* {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box !important;
 }
 
@@ -31,11 +26,11 @@
   flex-shrink: 1;
 }
 .post-item:not(:last-child) {
-  flex-basis: calc((100% / 4) - 8px);
+  flex-basis: calc((100% / var(--columns)) - 8px);
 }
 
 .post-item:last-child {
-  flex-basis: calc((100% / 4));
+  flex-basis: calc((100% / var(--columns)));
 }
 
 .post {
@@ -45,7 +40,7 @@
 
 .post video {
   display: block;
-  width: 100% !important;
+  width: calc(100% - 1px) !important;
   height: auto !important;
   border-radius: 8px;
 }

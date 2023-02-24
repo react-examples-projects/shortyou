@@ -16,7 +16,7 @@ export default function Create() {
     e.preventDefault();
     const fd = new FormData(e.target);
     fd.append("original", previewPicture);
-    for (const tag of tags) fd.append("tags[]", tag.text);
+    for (const tag of tags) fd.append("tags", tag.text);
 
     const res = await axios.post("http://localhost:5000/api/post", fd);
     const post = res.data?.data;
@@ -64,7 +64,6 @@ export default function Create() {
           <label htmlFor="tags">Tags post</label>
           <TagsInput
             onChangeTags={onChangeTags}
-            name="tags"
             id="tags"
             placeholder="Your awesome tags"
           />

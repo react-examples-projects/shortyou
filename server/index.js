@@ -25,7 +25,7 @@ app.use(
 app.use(morgan("dev"));
 app.use(express.static("./uploads"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(helmet());
 app.use(hpp());
 app.use(rateLimit(SERVER.API.RATE_LIMITS));
