@@ -15,6 +15,7 @@ const VideoPlayerPost = ({
   description,
   createdAt,
 }) => {
+  console.log("VideoPlayerPost");
   const [isPlaying, setPlaying] = useState(false);
   const [isVisiblePreviewPicture, setVisiblePreviewPicture] = useState(true);
   const [isLoaded, setLoaded] = useState(false);
@@ -173,12 +174,4 @@ const VideoPlayerPost = ({
   );
 };
 
-export default function Post({ posts }) {
-  return (
-    <article className="post-item">
-      {posts?.map((post) => (
-        <VideoPlayerPost key={post._id} {...post} />
-      ))}
-    </article>
-  );
-}
+export default VideoPlayerPost;

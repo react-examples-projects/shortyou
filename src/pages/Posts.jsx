@@ -15,9 +15,8 @@ import {
 } from "@mantine/core";
 import { BiSearchAlt2 } from "react-icons/bi";
 import { VscSettings } from "react-icons/vsc";
-
+import VideoPlayerPost from "../components/VideoPlayerPost";
 import axios from "axios";
-import Post from "../components/Post";
 
 const MARKS = [
   {
@@ -62,36 +61,45 @@ const MARKS = [
   },
 ];
 
+const fetchPosts = async () => {
+  const res = await axios.get("http://localhost:5000/api/post");
+  const posts = res.data?.data;
+  return posts;
+};
+
 export default function Posts() {
   const [posts, setPosts] = useState([]);
   const [columns, setColumns] = useState({});
+  const [totalColumns, setTotalColumns] = useState(5);
 
   useEffect(() => {
-    async function fetchPosts() {
+    (async () => {
+      const posts = await fetchPosts();
+      setPosts(posts);
+    })();
+  }, []);
+
+  useEffect(() => {
+    function fetchPosts() {
       let columnIndex = 0;
-      let columnsCount = 5;
       let columns = {};
-      const res = await axios.get("http://localhost:5000/api/post");
-      const posts = res.data?.data;
 
       for (let i = 0; i < posts.length; i++) {
-        const post = posts[i];
+        const post = <VideoPlayerPost {...posts[i]} />;
         columns[columnIndex] = columns[columnIndex]
           ? [...columns[columnIndex], post]
           : [post];
 
-        if (columnIndex === columnsCount - 1) {
+        if (columnIndex === totalColumns - 1) {
           columnIndex = 0;
         } else {
           columnIndex++;
         }
       }
-
-      setPosts(posts);
       setColumns(columns);
     }
     fetchPosts();
-  }, []);
+  }, [posts, totalColumns]);
 
   return (
     <AppShell
@@ -183,6 +191,7 @@ export default function Posts() {
             step={10}
             min={10}
             max={90}
+            onChangeEnd={(value) => setTotalColumns(value / 10)}
             //marks={MARKS}
             styles={{ markLabel: { display: "none" } }}
             sx={{ maxWidth: "300px" }}
@@ -192,10 +201,21 @@ export default function Posts() {
         </Box>
 
         {posts.length > 0 && (
-          <section className="posts">
-            {Object.entries(columns)?.map(([key, posts]) => (
-              <Post posts={posts} key={key} />
-            ))}
+          <section className="posts" style={{ "--columns": totalColumns }}>
+            {Object.entries(columns)?.map(([key, posts]) => {
+              console.log({ key, posts });
+              {
+                return (
+                  <article className="post-item">
+                    {posts?.map((postComponent) => postComponent)}
+                  </article>
+                );
+              }
+            })}
+            {/* {Object.entries(columns)?.map(([key, posts]) => {
+              console.log(key);
+              return <Post posts={posts} key={key} />;
+            })} */}
           </section>
         )}
       </main>
