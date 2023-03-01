@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AppShell,
@@ -17,6 +17,7 @@ import { BiSearchAlt2 } from "react-icons/bi";
 import { VscSettings } from "react-icons/vsc";
 import VideoPlayerPost from "../components/VideoPlayerPost";
 import axios from "axios";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
 const MARKS = [
   {
@@ -47,18 +48,6 @@ const MARKS = [
     value: 60,
     label: "6 columns",
   },
-  {
-    value: 70,
-    label: "7 columns",
-  },
-  {
-    value: 80,
-    label: "8 columns",
-  },
-  {
-    value: 90,
-    label: "9 columns",
-  },
 ];
 
 const fetchPosts = async () => {
@@ -69,37 +58,18 @@ const fetchPosts = async () => {
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
-  const [columns, setColumns] = useState({});
   const [totalColumns, setTotalColumns] = useState(5);
+  const columnsCached = useRef([]);
 
   useEffect(() => {
     (async () => {
       const posts = await fetchPosts();
+      columnsCached.current = posts.map((post) => (
+        <VideoPlayerPost {...post} key={post._id} />
+      ));
       setPosts(posts);
     })();
   }, []);
-
-  useEffect(() => {
-    function fetchPosts() {
-      let columnIndex = 0;
-      let columns = {};
-
-      for (let i = 0; i < posts.length; i++) {
-        const post = <VideoPlayerPost {...posts[i]} />;
-        columns[columnIndex] = columns[columnIndex]
-          ? [...columns[columnIndex], post]
-          : [post];
-
-        if (columnIndex === totalColumns - 1) {
-          columnIndex = 0;
-        } else {
-          columnIndex++;
-        }
-      }
-      setColumns(columns);
-    }
-    fetchPosts();
-  }, [posts, totalColumns]);
 
   return (
     <AppShell
@@ -190,7 +160,7 @@ export default function Posts() {
             defaultValue={50}
             step={10}
             min={10}
-            max={90}
+            max={60}
             onChangeEnd={(value) => setTotalColumns(value / 10)}
             //marks={MARKS}
             styles={{ markLabel: { display: "none" } }}
@@ -201,22 +171,19 @@ export default function Posts() {
         </Box>
 
         {posts.length > 0 && (
-          <section className="posts" style={{ "--columns": totalColumns }}>
-            {Object.entries(columns)?.map(([key, posts]) => {
-              console.log({ key, posts });
-              {
-                return (
-                  <article className="post-item">
-                    {posts?.map((postComponent) => postComponent)}
-                  </article>
-                );
-              }
-            })}
-            {/* {Object.entries(columns)?.map(([key, posts]) => {
-              console.log(key);
-              return <Post posts={posts} key={key} />;
-            })} */}
-          </section>
+          <ResponsiveMasonry
+            className="mt-4 "
+            columnsCountBreakPoints={{ 350: 1, 750: 2, 900: totalColumns }}
+          >
+            <Masonry gutter="8px">
+              {posts.map((post) => (
+                <article key={post._id}>
+                  <VideoPlayerPost {...post} />
+                </article>
+              ))}
+              
+            </Masonry>
+          </ResponsiveMasonry>
         )}
       </main>
     </AppShell>

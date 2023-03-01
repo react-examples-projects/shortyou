@@ -1,6 +1,6 @@
-import { useRef, useState } from "react";
+import { useState, memo } from "react";
 import { getFormattedDistanceToNow } from "../helpers/utils";
-import { Badge, Box, Loader } from "@mantine/core";
+import { Badge, Box, Loader, Skeleton } from "@mantine/core";
 import ReactPlayer from "react-player";
 import useLazyloadImage from "../hooks/useLazyloadImage";
 import TextOverflow from "./TextOverflow";
@@ -13,13 +13,14 @@ const VideoPlayerPost = ({
   title,
   tags,
   description,
+  height,
   createdAt,
 }) => {
-  console.log("VideoPlayerPost");
   const [isPlaying, setPlaying] = useState(false);
   const [isVisiblePreviewPicture, setVisiblePreviewPicture] = useState(true);
   const [isLoaded, setLoaded] = useState(false);
   const [isDownloadingBuffer, setDownloadingBuffer] = useState(false);
+  const [isLoadedPreviewImg, setLoadedPreviewImg] = useState(false);
 
   const onMousehover = (e) => {
     e.stopPropagation();
@@ -44,23 +45,33 @@ const VideoPlayerPost = ({
   };
 
   const { ref, loadedResource } = useLazyloadImage(preview.original.url);
-  const refPreview = useRef(null);
+
+  console.log(loadedResource);
+
   return (
     <div
+      title={title}
       onMouseEnter={onMousehover}
       onMouseLeave={onMouseLeave}
-      className="position-relative w-100 mb-2"
+      className="position-relative w-100 overflow-hidden"
       style={{
         cursor: "pointer",
+        borderRadius: "8px",
       }}
     >
+      {(!loadedResource || !isLoaded) && (
+          <Skeleton
+            height="100%"
+            width="100%"
+            radius="md"
+            sx={{ zIndex: 5, position: "absolute", aspectRatio: "16 / 9" }}
+          />
+        )}
       <div
-        className="position-relative overflow-hidden"
+        className="d-flex flex-column position-relative"
         style={{
           zIndex: isVisiblePreviewPicture && isLoaded ? 1 : -1,
-          borderRadius: "8px",
         }}
-        ref={refPreview}
       >
         <div
           className={cls("position-absolute w-100", {
@@ -69,7 +80,6 @@ const VideoPlayerPost = ({
           style={{
             zIndex: 3,
             height: "calc(100% + 5px)",
-            borderRadius: "8px",
             top: 0,
             left: 0,
             bottom: 0,
@@ -80,19 +90,23 @@ const VideoPlayerPost = ({
 
         <img
           src={loadedResource || preview.thumbail.url}
+          loading="lazy"
+          ref={ref}
+          onLoad={() => setLoadedPreviewImg(true)}
           className={cls("position-relative w-100 h-100 img-fluid", {
             loaded: !!loadedResource,
           })}
+          alt={title}
+          title={title}
           style={{
-            borderRadius: "8px",
             filter: "blur(1px)",
             marginTop: "-1px",
             objectFit: "cover",
             top: "1px",
-            zIndex: 2,
+            zIndex: isLoadedPreviewImg ? 2 : -1,
           }}
-          ref={ref}
         />
+
         <div
           className="px-3 position-absolute w-100"
           style={{ bottom: "12px", zIndex: 4 }}
@@ -145,7 +159,6 @@ const VideoPlayerPost = ({
 
       <ReactPlayer
         id={_id}
-        key={_id}
         url={url}
         className="post position-absolute top-0"
         playing={isPlaying}
@@ -158,6 +171,7 @@ const VideoPlayerPost = ({
       >
         Tu navegador no admite el elemento <code>video</code>.
       </ReactPlayer>
+
       {isDownloadingBuffer && !isVisiblePreviewPicture && (
         <Loader
           size="md"
@@ -174,4 +188,4 @@ const VideoPlayerPost = ({
   );
 };
 
-export default VideoPlayerPost;
+export default memo(VideoPlayerPost);
