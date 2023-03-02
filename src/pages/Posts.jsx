@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import {
   AppShell,
   Navbar,
@@ -15,9 +14,11 @@ import {
 } from "@mantine/core";
 import { BiSearchAlt2 } from "react-icons/bi";
 import { VscSettings } from "react-icons/vsc";
-import VideoPlayerPost from "../components/VideoPlayerPost";
-import axios from "axios";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import VideoPlayerPost from "../components/VideoPlayerPost";
+import useToggle from "../hooks/useToggle";
+import axios from "axios";
+import UploadModal from "../components/UploadModal";
 
 const MARKS = [
   {
@@ -60,6 +61,7 @@ export default function Posts() {
   const [posts, setPosts] = useState([]);
   const [totalColumns, setTotalColumns] = useState(5);
   const columnsCached = useRef([]);
+  const [isOpen, toggleOpen] = useToggle();
 
   useEffect(() => {
     (async () => {
@@ -94,9 +96,6 @@ export default function Posts() {
       })}
     >
       <main className="mt-3 px-2">
-        <Link to="/create" className="d-block mb-5">
-          Create new post
-        </Link>
         <Title
           className="title"
           order={1}
@@ -148,6 +147,7 @@ export default function Posts() {
               variant="light"
               radius="xl"
               mt="1rem"
+              onClick={toggleOpen}
               sx={{ maxWidth: "150px" }}
             >
               Upload
@@ -181,10 +181,11 @@ export default function Posts() {
                   <VideoPlayerPost {...post} />
                 </article>
               ))}
-              
             </Masonry>
           </ResponsiveMasonry>
         )}
+
+        <UploadModal {...{ isOpen, toggleOpen }} />
       </main>
     </AppShell>
   );

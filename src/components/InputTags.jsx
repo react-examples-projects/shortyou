@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { generateId } from "../helpers/utils";
+import { Input, Badge, Box, ActionIcon } from "@mantine/core";
+import { BiX, BiHash } from "react-icons/bi";
+
 const noop = () => undefined;
 
 function TagsInput({
   onChangeTags = noop,
   containerProps,
   tagProps,
+
   ...inputProps
 }) {
   const [tags, setTags] = useState([]);
@@ -34,21 +38,43 @@ function TagsInput({
 
   return (
     <div className="tags-input-container" {...containerProps}>
-      {tags.map((tag) => (
-        <div className="tag-item" key={tag.id} {...tagProps}>
-          <span className="text">{tag.text}</span>
-          <span className="close" onClick={() => removeTag(tag.id)}>
-            &times;
-          </span>
-        </div>
-      ))}
-      <input
-        onKeyDown={handleKeyDown}
-        type="text"
-        className="tags-input"
-        placeholder="Type somthing"
-        {...inputProps}
-      />
+      {tags.map((tag) => {
+        const removeButton = (
+          <ActionIcon
+            size="xs"
+            color="blue"
+            radius="xl"
+            variant="transparent"
+            onClick={() => removeTag(tag.id)}
+          >
+            <BiX />
+          </ActionIcon>
+        );
+        return (
+          <Badge
+            color="gray"
+            size="lg"
+            radius="xs"
+            variant="filled"
+            key={tag.id}
+            rightSection={removeButton}
+            {...tagProps}
+          >
+            {tag.text}
+          </Badge>
+        );
+      })}
+
+      <Box className="d-block w-100">
+        <Input
+          onKeyDown={handleKeyDown}
+          type="text"
+          className="tags-input"
+          placeholder="Type somthing"
+          icon={<BiHash />}
+          {...inputProps}
+        />
+      </Box>
     </div>
   );
 }

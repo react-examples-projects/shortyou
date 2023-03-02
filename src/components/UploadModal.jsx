@@ -1,9 +1,19 @@
-import { useState, useEffect } from "react";
 import axios from "axios";
-import TagsInput from "../components/InputTags";
+import TagsInput from "./InputTags";
 import { generateVideoThumbnails } from "@rajesh896/video-thumbnails-generator";
+import {
+  Modal,
+  Button,
+  Input,
+  FileInput,
+  Textarea,
+  useMantineTheme,
+} from "@mantine/core";
+import { BiUpload } from "react-icons/bi";
+import { useState } from "react";
 
-export default function Create() {
+function UploadModal({ isOpen, toggleOpen }) {
+  const theme = useMantineTheme();
   const [videoFile, setVideoFile] = useState(null);
   const [previewVideo, setPreviewVideo] = useState("");
   const [previewPicture, setPreviewPicture] = useState("");
@@ -22,15 +32,13 @@ export default function Create() {
     const post = res.data?.data;
   };
 
-  const onChangeFile = async (e) => {
-    const file = e.target.files[0];
+  const onChangeFile = async (file) => {
     const preview = URL.createObjectURL(file);
     setVideoFile(file);
     setPreviewVideo(preview);
 
     const previewPictures = await generateVideoThumbnails(file, 3);
     setPreviewPictures(previewPictures);
-    console.log(previewPictures);
   };
 
   const onChangePreviewPicture = (preview) => {
@@ -38,30 +46,46 @@ export default function Create() {
   };
 
   return (
-    <div className="App">
+    <Modal
+      opened={isOpen}
+      onClose={toggleOpen}
+      title="Upload post"
+      overlayColor={
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[9]
+          : theme.colors.gray[2]
+      }
+      overlayOpacity={0.55}
+      overlayBlur={2}
+      centered
+    >
       <form autoComplete="off" onSubmit={onSubmit}>
-        <div>
-          <label htmlFor="title">Title post</label>
-          <input
+        <Input.Wrapper id="title" label="Title Post" required>
+          <Input
             name="title"
             id="title"
             placeholder="Your awesome title"
+            className="mt-2 mb-3"
             required
           />
-        </div>
+        </Input.Wrapper>
 
-        <div>
-          <label htmlFor="description">Title post</label>
-          <input
-            name="description"
-            id="description"
-            placeholder="Your awesome description"
-            required
-          />
-        </div>
+        <Textarea
+          placeholder="Your awesome description"
+          label="Post description"
+          labelProps={{ mb: "0.5rem" }}
+          className="mb-3"
+          name="description"
+          id="description"
+          maxRows={8}
+          minRows={6}
+          required
+        />
 
-        <div>
-          <label htmlFor="tags">Tags post</label>
+        <div className="mb-3">
+          <label htmlFor="tags" style={{ fontSize: "14px" }}>
+            Tags post
+          </label>
           <TagsInput
             onChangeTags={onChangeTags}
             id="tags"
@@ -70,13 +94,16 @@ export default function Create() {
         </div>
 
         <div>
-          <label htmlFor="file">Video file (max 10mb)</label>
-          <input
-            type="file"
+          <FileInput
+            label="Video file (max 10mb)"
+            labelProps={{ mb: "0.5rem" }}
+            placeholder="Upload your video"
+            icon={<BiUpload />}
+            accept="video/mp4,video/webm"
             name="file"
             id="file"
             onChange={onChangeFile}
-            accept="video/mp4,video/webm"
+            required
           />
         </div>
 
@@ -123,8 +150,13 @@ export default function Create() {
             />
           </div>
         )}
-        <button type="submit">Create post</button>
+
+        <Button color="green" type="submit" className="mt-3" fullWidth>
+          Create Post
+        </Button>
       </form>
-    </div>
+    </Modal>
   );
 }
+
+export default UploadModal;

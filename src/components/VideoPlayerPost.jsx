@@ -46,7 +46,7 @@ const VideoPlayerPost = ({
 
   const { ref, loadedResource } = useLazyloadImage(preview.original.url);
 
-  console.log(loadedResource);
+  console.log("render VideoPlayerPost");
 
   return (
     <div
@@ -59,14 +59,14 @@ const VideoPlayerPost = ({
         borderRadius: "8px",
       }}
     >
-      {(!loadedResource || !isLoaded) && (
-          <Skeleton
-            height="100%"
-            width="100%"
-            radius="md"
-            sx={{ zIndex: 5, position: "absolute", aspectRatio: "16 / 9" }}
-          />
-        )}
+      {(!loadedResource || !isLoaded || !isLoadedPreviewImg) && (
+        <Skeleton
+          height="100%"
+          width="100%"
+          radius="md"
+          sx={{ zIndex: 5, position: "absolute", aspectRatio: "16 / 9" }}
+        />
+      )}
       <div
         className="d-flex flex-column position-relative"
         style={{
