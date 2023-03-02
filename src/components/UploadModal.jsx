@@ -1,5 +1,6 @@
 import axios from "axios";
 import TagsInput from "./InputTags";
+import ReactPlayer from "react-player";
 import { generateVideoThumbnails } from "@rajesh896/video-thumbnails-generator";
 import {
   Modal,
@@ -8,6 +9,7 @@ import {
   FileInput,
   Textarea,
   useMantineTheme,
+  Box,
 } from "@mantine/core";
 import { BiUpload } from "react-icons/bi";
 import { useState } from "react";
@@ -83,7 +85,11 @@ function UploadModal({ isOpen, toggleOpen }) {
         />
 
         <div className="mb-3">
-          <label htmlFor="tags" style={{ fontSize: "14px" }}>
+          <label
+            htmlFor="tags"
+            style={{ fontSize: "14px" }}
+            className="d-block mb-2"
+          >
             Tags post
           </label>
           <TagsInput
@@ -93,7 +99,7 @@ function UploadModal({ isOpen, toggleOpen }) {
           />
         </div>
 
-        <div>
+        <div className="mb-3">
           <FileInput
             label="Video file (max 10mb)"
             labelProps={{ mb: "0.5rem" }}
@@ -108,11 +114,23 @@ function UploadModal({ isOpen, toggleOpen }) {
         </div>
 
         {previewPictures.length > 0 && (
-          <div>
-            <label htmlFor="">Post preview</label>
-            <div
-              className="d-flex justify-content-between gap-2"
-              style={{ maxWidth: "500px" }}
+          <div className="w-100">
+            <label htmlFor="" style={{ fontSize: "14px" }}>
+              Post preview
+            </label>
+            <Box
+              className="d-flex justify-content-between w-100 gap-2 mt-2 pb-2"
+              sx={{
+                maxWidth: "500px",
+                overflowX: "auto",
+                "&::-webkit-scrollbar": {
+                  height: "8px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  background: "#555",
+                  borderRadius: "4px",
+                },
+              }}
             >
               {previewPictures.map((previewPic) => (
                 <img
@@ -128,26 +146,34 @@ function UploadModal({ isOpen, toggleOpen }) {
                   alt="Preview picture for the video"
                 />
               ))}
-            </div>
+            </Box>
           </div>
         )}
 
         {previewVideo && (
-          <div>
-            <label htmlFor="" className="d-block">
+          <div className="mt-3">
+            <label
+              htmlFor=""
+              className="d-block mb-2"
+              style={{ fontSize: "14px" }}
+            >
               Preview video
             </label>
-            <video
-              src={previewVideo}
+            
+            <ReactPlayer
+              url={previewVideo}
+              className="d-block w-100"
               style={{
                 aspectRatio: "16 / 9",
                 maxWidth: "400px",
                 maxHeight: "400px",
                 borderRadius: "5px",
               }}
-              loop
               controls
-            />
+              loop
+            >
+              Tu navegador no admite el elemento <code>video</code>.
+            </ReactPlayer>
           </div>
         )}
 

@@ -53,10 +53,11 @@ function TagsInput({
         return (
           <Badge
             color="gray"
-            size="lg"
+            size="md"
             radius="xs"
             variant="filled"
             key={tag.id}
+            className=""
             rightSection={removeButton}
             {...tagProps}
           >
