@@ -31,6 +31,29 @@
   filter: none !important;
 }
 
+.preview-image{
+  object-fit: cover;
+  width: 100%;
+  max-width: calc((500px / 4) + 2rem);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.selected{
+  padding: 5px;
+}
+
+.player-wrapper {
+  position: relative;
+  padding-top: 56.25%; /* Player ratio: 100 / (1280 / 720) */
+}
+
+.react-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 .tags-input-container {
   width: 100%;
   display: flex;

@@ -1,23 +1,27 @@
 import { generateVideoThumbnails } from "@rajesh896/video-thumbnails-generator";
+import { useState, useEffect } from "react";
 import { Box } from "@mantine/core";
-import { useState } from "react";
+import cls from "classnames";
+const noop = () => undefined;
 
-export default function VideoPreviews() {
-  const [previewPicture, setPreviewPicture] = useState("");
+export default function VideoPreviewPictures({
+  videoFile,
+  onChangePreviewPicture = noop,
+  onChangePreviewPictures = noop,
+}) {
   const [previewPictures, setPreviewPictures] = useState([]);
 
-  const onChangeFile = async (file) => {
-    const preview = URL.createObjectURL(file);
-    setVideoFile(file);
-    setPreviewVideo(preview);
+  useEffect(() => {
+    (async () => {
+      if (!videoFile) return;
 
-    const previewPictures = await generateVideoThumbnails(file, 3);
-    setPreviewPictures(previewPictures);
-  };
+      const previewPictures = await generateVideoThumbnails(videoFile, 3);
+      setPreviewPictures(previewPictures);
+      onChangePreviewPictures(previewPictures);
+    })();
+  }, [videoFile]);
 
-  const onChangePreviewPicture = (preview) => {
-    setPreviewPicture(preview);
-  };
+  if (previewPictures.length < 0) return null;
 
   return (
     <div className="w-100">
@@ -38,17 +42,14 @@ export default function VideoPreviews() {
           },
         }}
       >
-        {previewPictures.map((previewPic) => (
+        {previewPictures.map((previewPic, index) => (
           <img
+            key={index}
             src={previewPic}
             onClick={() => onChangePreviewPicture(previewPic)}
-            style={{
-              objectFit: "cover",
-              width: "100%",
-              maxWidth: "calc(500px / 4)",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
+            className={cls("preview-image", {
+              selected: false,
+            })}
             alt="Preview picture for the video"
           />
         ))}

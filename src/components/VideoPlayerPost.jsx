@@ -21,6 +21,10 @@ const VideoPlayerPost = ({
   const [isLoaded, setLoaded] = useState(false);
   const [isDownloadingBuffer, setDownloadingBuffer] = useState(false);
   const [isLoadedPreviewImg, setLoadedPreviewImg] = useState(false);
+  const { ref, loadedResource } = useLazyloadImage(
+    preview.original.url,
+    isLoadedPreviewImg
+  );
 
   const onMousehover = (e) => {
     e.stopPropagation();
@@ -44,10 +48,6 @@ const VideoPlayerPost = ({
     console.log("buffer finished");
   };
 
-  const { ref, loadedResource } = useLazyloadImage(preview.original.url);
-
-  console.log("render VideoPlayerPost");
-
   return (
     <div
       title={title}
@@ -59,7 +59,7 @@ const VideoPlayerPost = ({
         borderRadius: "8px",
       }}
     >
-      {(!loadedResource || !isLoaded || !isLoadedPreviewImg) && (
+      {!isLoadedPreviewImg && (
         <Skeleton
           height="100%"
           width="100%"
@@ -70,7 +70,7 @@ const VideoPlayerPost = ({
       <div
         className="d-flex flex-column position-relative"
         style={{
-          zIndex: isVisiblePreviewPicture && isLoaded ? 1 : -1,
+          zIndex: isVisiblePreviewPicture || !isPlaying ? 1 : -1,
         }}
       >
         <div
@@ -103,13 +103,16 @@ const VideoPlayerPost = ({
             marginTop: "-1px",
             objectFit: "cover",
             top: "1px",
-            zIndex: isLoadedPreviewImg ? 2 : -1,
+            zIndex: 2,
           }}
         />
 
         <div
           className="px-3 position-absolute w-100"
-          style={{ bottom: "12px", zIndex: 4 }}
+          style={{
+            bottom: "12px",
+            zIndex: isVisiblePreviewPicture || !isPlaying ? 4 : -1,
+          }}
         >
           <TextOverflow
             fw={700}
@@ -159,7 +162,8 @@ const VideoPlayerPost = ({
 
       <ReactPlayer
         id={_id}
-        url={url}
+        url={loadedResource ? url : null}
+        preload="none"
         className="post position-absolute top-0"
         playing={isPlaying}
         onReady={() => setLoaded(true)}
@@ -172,17 +176,33 @@ const VideoPlayerPost = ({
         Tu navegador no admite el elemento <code>video</code>.
       </ReactPlayer>
 
-      {isDownloadingBuffer && !isVisiblePreviewPicture && (
-        <Loader
-          size="md"
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 1,
-          }}
-        />
+      {(isDownloadingBuffer || !isLoaded) && !isVisiblePreviewPicture && (
+        <>
+          {!isLoaded && (
+            <Skeleton
+              height="100%"
+              width="100%"
+              radius="md"
+              sx={{
+                zIndex: 5,
+                position: "absolute",
+                aspectRatio: "16 / 9",
+                top: 0,
+                left: 0,
+              }}
+            />
+          )}
+          <Loader
+            size="md"
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              zIndex: 6,
+            }}
+          />
+        </>
       )}
     </div>
   );

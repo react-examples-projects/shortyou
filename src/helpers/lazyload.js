@@ -3,13 +3,15 @@ export default function lazyLoad(image, cb = () => undefined) {
     const element = entrie[0]?.target;
     const source = element.getAttribute("data-src");
     if (entrie[0]?.isIntersecting && source) {
-      element.src = source;
+      console.log("is intersecting img");
+      element.setAttribute("src", source);
 
       element.addEventListener("load", (e) => {
-        cb(source);
         element.classList.add("loaded");
         observer.unobserve(e.target);
         element.removeAttribute("data-src");
+        cb(source);
+        console.log("Loaded", { source });
       });
     }
   }

@@ -5,15 +5,15 @@ import lazyLoad from "../helpers/lazyload";
  * @param {String} src The original source url
  * @returns {String} The image url
  */
-export default function useLazyloadImage(src) {
+export default function useLazyloadImage(src, isLoadedPreviewImg) {
   const imgNodeRef = useRef(null);
   const [loadedResource, setLoadedResource] = useState(null);
   useEffect(() => {
-    if (imgNodeRef.current) {
+    if (imgNodeRef.current && isLoadedPreviewImg) {
       imgNodeRef.current.setAttribute("data-src", src);
       lazyLoad(imgNodeRef.current, (url) => setLoadedResource(url));
     }
-  }, [src]);
+  }, [src, isLoadedPreviewImg]);
 
   return { ref: imgNodeRef, loadedResource };
 }

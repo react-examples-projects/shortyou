@@ -1,6 +1,7 @@
 import axios from "axios";
 import TagsInput from "./InputTags";
 import ReactPlayer from "react-player";
+import VideoPreviewPictures from "./VideoPreviewPictures";
 import { generateVideoThumbnails } from "@rajesh896/video-thumbnails-generator";
 import {
   Modal,
@@ -21,6 +22,9 @@ function UploadModal({ isOpen, toggleOpen }) {
   const [previewPicture, setPreviewPicture] = useState("");
   const [previewPictures, setPreviewPictures] = useState([]);
   const [tags, setTags] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [error, setError] = useState(null);
 
   const onChangeTags = (tags) => setTags(tags);
 
@@ -38,14 +42,9 @@ function UploadModal({ isOpen, toggleOpen }) {
     const preview = URL.createObjectURL(file);
     setVideoFile(file);
     setPreviewVideo(preview);
-
-    const previewPictures = await generateVideoThumbnails(file, 3);
-    setPreviewPictures(previewPictures);
   };
 
-  const onChangePreviewPicture = (preview) => {
-    setPreviewPicture(preview);
-  };
+  const onChangePreviewPicture = (preview) => setPreviewPicture(preview);
 
   return (
     <Modal
@@ -113,42 +112,10 @@ function UploadModal({ isOpen, toggleOpen }) {
           />
         </div>
 
-        {previewPictures.length > 0 && (
-          <div className="w-100">
-            <label htmlFor="" style={{ fontSize: "14px" }}>
-              Post preview
-            </label>
-            <Box
-              className="d-flex justify-content-between w-100 gap-2 mt-2 pb-2"
-              sx={{
-                maxWidth: "500px",
-                overflowX: "auto",
-                "&::-webkit-scrollbar": {
-                  height: "8px",
-                },
-                "&::-webkit-scrollbar-thumb": {
-                  background: "#555",
-                  borderRadius: "4px",
-                },
-              }}
-            >
-              {previewPictures.map((previewPic) => (
-                <img
-                  src={previewPic}
-                  onClick={() => onChangePreviewPicture(previewPic)}
-                  style={{
-                    objectFit: "cover",
-                    width: "100%",
-                    maxWidth: "calc(500px / 4)",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                  }}
-                  alt="Preview picture for the video"
-                />
-              ))}
-            </Box>
-          </div>
-        )}
+        <VideoPreviewPictures
+          onChangePreviewPicture={onChangePreviewPicture}
+          videoFile={videoFile}
+        />
 
         {previewVideo && (
           <div className="mt-3">
@@ -159,21 +126,18 @@ function UploadModal({ isOpen, toggleOpen }) {
             >
               Preview video
             </label>
-            
-            <ReactPlayer
-              url={previewVideo}
-              className="d-block w-100"
-              style={{
-                aspectRatio: "16 / 9",
-                maxWidth: "400px",
-                maxHeight: "400px",
-                borderRadius: "5px",
-              }}
-              controls
-              loop
-            >
-              Tu navegador no admite el elemento <code>video</code>.
-            </ReactPlayer>
+            <div className="player-wrapper">
+              <ReactPlayer
+                url={previewVideo}
+                className="d-block w-100 react-player rounded-2"
+                width="100%"
+                height="100%"
+                controls
+                loop
+              >
+                Tu navegador no admite el elemento <code>video</code>.
+              </ReactPlayer>
+            </div>
           </div>
         )}
 
