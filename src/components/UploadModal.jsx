@@ -2,7 +2,6 @@ import axios from "axios";
 import TagsInput from "./InputTags";
 import ReactPlayer from "react-player";
 import VideoPreviewPictures from "./VideoPreviewPictures";
-import { generateVideoThumbnails } from "@rajesh896/video-thumbnails-generator";
 import {
   Modal,
   Button,
@@ -10,7 +9,6 @@ import {
   FileInput,
   Textarea,
   useMantineTheme,
-  Box,
 } from "@mantine/core";
 import { BiUpload } from "react-icons/bi";
 import { useState } from "react";
@@ -20,7 +18,6 @@ function UploadModal({ isOpen, toggleOpen }) {
   const [videoFile, setVideoFile] = useState(null);
   const [previewVideo, setPreviewVideo] = useState("");
   const [previewPicture, setPreviewPicture] = useState("");
-  const [previewPictures, setPreviewPictures] = useState([]);
   const [tags, setTags] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
