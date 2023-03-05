@@ -20,6 +20,7 @@ export default function VideoPreviewPictures({
     const file = e.target.files[0];
     const img = await fileToBase64(file);
     setCustomPreviewPicture(img);
+    onChangePreviewPicture(img);
   };
 
   const deleteImage = () => {

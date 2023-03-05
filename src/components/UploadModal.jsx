@@ -1,7 +1,12 @@
 import axios from "axios";
 import TagsInput from "./InputTags";
 import ReactPlayer from "react-player";
+import useFormValidation from "../hooks/useFormValidation";
 import VideoPreviewPictures from "./VideoPreviewPictures";
+import { postSchema } from "../helpers/schema";
+import { toFormDataObj } from "../helpers/utils";
+import { BiUpload } from "react-icons/bi";
+import { useState } from "react";
 import {
   Modal,
   Button,
@@ -10,14 +15,15 @@ import {
   Textarea,
   useMantineTheme,
 } from "@mantine/core";
-import { BiUpload } from "react-icons/bi";
-import { useState } from "react";
 
 function UploadModal({ isOpen, toggleOpen }) {
   const theme = useMantineTheme();
+  const { errors, reset, handleSubmit, register } =
+    useFormValidation(postSchema);
   const [videoFile, setVideoFile] = useState(null);
   const [previewVideo, setPreviewVideo] = useState("");
   const [previewPicture, setPreviewPicture] = useState("");
+  const [previewPictures, setPreviewPictures] = useState([]);
   const [tags, setTags] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -26,11 +32,12 @@ function UploadModal({ isOpen, toggleOpen }) {
   const onChangeTags = (tags) => setTags(tags);
 
   const onSubmit = async (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    fd.append("original", previewPicture);
-    for (const tag of tags) fd.append("tags", tag.text);
-
+    const fd = toFormDataObj({ ...e, tags });
+    if (previewPicture) {
+      fd.append("original", previewPicture);
+    } else {
+      fd.append("original", previewPictures[0]);
+    }
     const res = await axios.post("http://localhost:5000/api/post", fd);
     const post = res.data?.data;
   };
@@ -42,6 +49,7 @@ function UploadModal({ isOpen, toggleOpen }) {
   };
 
   const onChangePreviewPicture = (preview) => setPreviewPicture(preview);
+  const onChangePreviewPictures = (previews) => setPreviewPictures(previews);
 
   return (
     <Modal
@@ -57,18 +65,24 @@ function UploadModal({ isOpen, toggleOpen }) {
       overlayBlur={2}
       centered
     >
-      <form autoComplete="off" onSubmit={onSubmit}>
-        <Input.Wrapper id="title" label="Title Post" required>
+      <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+        <Input.Wrapper
+          id="title"
+          label="Title Post"
+          error={errors.title?.message}
+          required
+        >
           <Input
+            {...register("title")}
             name="title"
             id="title"
             placeholder="Your awesome title"
             className="mt-2 mb-3"
-            required
           />
         </Input.Wrapper>
 
         <Textarea
+          {...register("description")}
           placeholder="Your awesome description"
           label="Post description"
           labelProps={{ mb: "0.5rem" }}
@@ -77,7 +91,7 @@ function UploadModal({ isOpen, toggleOpen }) {
           id="description"
           maxRows={8}
           minRows={6}
-          required
+          error={errors.description?.message}
         />
 
         <div className="mb-3">
@@ -111,6 +125,7 @@ function UploadModal({ isOpen, toggleOpen }) {
 
         <VideoPreviewPictures
           onChangePreviewPicture={onChangePreviewPicture}
+          onChangePreviewPictures={onChangePreviewPictures}
           videoFile={videoFile}
         />
 

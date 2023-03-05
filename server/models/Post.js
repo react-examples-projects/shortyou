@@ -35,7 +35,7 @@ const PostSchema = new Schema(
     },
     description: {
       type: String,
-      maxlength: [400, "The maximun description length is 400"],
+      maxlength: [1000, "The maximun description length is 1000"],
       trim: true,
       default: "",
     },

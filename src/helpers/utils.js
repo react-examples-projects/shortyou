@@ -37,6 +37,28 @@ export function getShortText(text, maxLength = 230) {
   return shortText;
 }
 
+export function randomNumber(min = 0, max = 100) {
+  const difference = max - min;
+  let rand = Math.random();
+  rand = Math.floor(rand * difference);
+  rand = rand + min;
+  return rand;
+}
+
+export function toFormDataObj(params) {
+  const fd = new FormData();
+  for (const [v, k] of Object.entries(params)) {
+    if (Array.isArray(k)) {
+      for (let item of k) {
+        fd.append(v, item);
+      }
+    } else {
+      fd.append(v, k);
+    }
+  }
+  return fd;
+}
+
 function dec2hex(dec) {
   return dec.toString(16).padStart(2, "0");
 }

@@ -1,51 +1,60 @@
-import { Box } from "@mantine/core";
+import { Box, Alert, Text, Code } from "@mantine/core";
+import { BiX } from "react-icons/bi";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import InfiniteScroll from "react-infinite-scroll-component";
 import VideoPlayerPost from "./VideoPlayerPost";
-
-const noop = () => [];
+import PostListLoader from "./PostListLoader";
 
 export default function PostList({
   posts,
-  hasMore,
   totalColumns,
-  fetchMorePosts = noop,
   children,
-  dataLength = 0,
+  isLoading,
+  error,
   ...props
 }) {
+  if (error) {
+    return (
+      <Alert
+        icon={<BiX style={{ fontSize: "1.5rem" }} />}
+        title="Error while fetching posts"
+        color="red"
+        className="mt-4"
+      >
+        <Text>
+          Something went wrong while fetching the posts from server. Refetch the
+          browser o contact us.
+        </Text>
+
+        <Text className="mt-2">
+          <Code>Error code: {error.toString()}</Code>
+        </Text>
+      </Alert>
+    );
+  }
+  if (isLoading) {
+    return <PostListLoader totalColumns={totalColumns} />;
+  }
+
   return (
     <Box className="w-100" {...props}>
       {posts.length > 0 && (
-        <InfiniteScroll
-          dataLength={dataLength}
-          next={fetchMorePosts}
-          hasMore={hasMore}
-          loader={<h4>Loading...</h4>}
-          endMessage={
-            <p style={{ textAlign: "center" }}>
-              <b>Yay! You have seen it all</b>
-            </p>
-          }
+        <ResponsiveMasonry
+          className="mt-4 "
+          columnsCountBreakPoints={{
+            520: 1,
+            750: 2,
+            960: 3,
+            1200: totalColumns,
+          }}
         >
-          <ResponsiveMasonry
-            className="mt-4 "
-            columnsCountBreakPoints={{
-              520: 1,
-              750: 2,
-              960: 3,
-              1200: totalColumns,
-            }}
-          >
-            <Masonry gutter="8px">
-              {posts.map((post) => (
-                <article key={post._id} id={"post_" + post._id}>
-                  <VideoPlayerPost {...post} />
-                </article>
-              ))}
-            </Masonry>
-          </ResponsiveMasonry>
-        </InfiniteScroll>
+          <Masonry gutter="10px">
+            {posts.map((post) => (
+              <article key={post._id} id={"post_" + post._id}>
+                <VideoPlayerPost {...post} />
+              </article>
+            ))}
+          </Masonry>
+        </ResponsiveMasonry>
       )}
 
       {/* [!] avoid prop drilling*/}

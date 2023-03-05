@@ -20,10 +20,6 @@ import useMediaQuery from "../hooks/useMediaQuery";
 
 const MARKS = [
   {
-    value: 10,
-    label: "1 columns",
-  },
-  {
     value: 20,
     label: "2 columns",
   },
@@ -43,26 +39,18 @@ const MARKS = [
 
 export default function Posts() {
   const {
-    data,
-    hasMore,
+    posts,
     isOpen,
     toggleOpen,
-    fetchMorePosts,
     changeColumns,
     totalColumns,
-    ...args
+    isLoading,
+    error,
   } = usePosts();
   const isTablet = useMediaQuery("max-width: 1200px");
   return (
     <AppShell
       padding="md"
-      navbar={
-        <Navbar
-          width={{ base: 200 }}
-          p="xs"
-          sx={{ background: "transparent" }}
-        ></Navbar>
-      }
       header={<Header height={60} p="xs"></Header>}
       styles={(theme) => ({
         main: {
@@ -138,7 +126,7 @@ export default function Posts() {
               label={(val) => MARKS.find((mark) => mark.value === val).label}
               defaultValue={40}
               step={10}
-              min={10}
+              min={20}
               max={50}
               onChangeEnd={changeColumns}
               styles={{ markLabel: { display: "none" } }}
@@ -149,11 +137,7 @@ export default function Posts() {
           )}
         </Box>
 
-        <PostList
-          posts={data.posts}
-          dataLength={data?.totalPages}
-          {...{ hasMore, totalColumns, fetchMorePosts, ...args }}
-        >
+        <PostList posts={posts} {...{ totalColumns, isLoading, error }}>
           <UploadModal {...{ isOpen, toggleOpen }} />
         </PostList>
       </Box>
