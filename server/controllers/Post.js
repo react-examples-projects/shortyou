@@ -5,12 +5,27 @@ const { isFileTooLarge, isNotValidFileType } = require("../helpers/utils");
 
 class PostController {
   async getAll(req, res, next) {
+    const page = Number(req.query.page ?? 1);
+    const limit = Number(req.query.limit ?? 10);
+
     try {
-      const posts = await PostModel.find({})
-        .sort({ createdAt: -1 })
+      const posts = await PostModel.find()
+        .limit(limit * 1)
+        .skip((page - 1) * limit)
         .select("-folder -fps -duration -updatedAt -__v")
+        .sort({ createdAt: -1 })
         .lean();
-      success(res, posts);
+
+      const count = await PostModel.count();
+      const totalPages = Math.ceil(count / limit);
+      const nextPage = page === totalPages ? null : page + 1;
+
+      success(res, {
+        posts,
+        totalPages,
+        nextPage,
+        currentPage: page,
+      });
     } catch (err) {
       next(err);
     }

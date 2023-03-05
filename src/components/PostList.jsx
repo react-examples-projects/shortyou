@@ -7,18 +7,20 @@ const noop = () => [];
 
 export default function PostList({
   posts,
+  hasMore,
   totalColumns,
   fetchMorePosts = noop,
   children,
+  dataLength = 0,
   ...props
 }) {
   return (
     <Box className="w-100" {...props}>
       {posts.length > 0 && (
         <InfiniteScroll
-          dataLength={posts.length} //This is important field to render the next data
+          dataLength={dataLength}
           next={fetchMorePosts}
-          hasMore={true}
+          hasMore={hasMore}
           loader={<h4>Loading...</h4>}
           endMessage={
             <p style={{ textAlign: "center" }}>
@@ -37,7 +39,7 @@ export default function PostList({
           >
             <Masonry gutter="8px">
               {posts.map((post) => (
-                <article key={post._id}>
+                <article key={post._id} id={"post_" + post._id}>
                   <VideoPlayerPost {...post} />
                 </article>
               ))}

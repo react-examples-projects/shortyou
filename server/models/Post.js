@@ -89,32 +89,5 @@ const PostSchema = new Schema(
   }
 );
 
-PostSchema.methods.paginate = function (pageNo, callback) {
-  const skip = limit * (pageNo - 1);
-  let totalCount;
-
-  this.count({}, (err, count) => {
-    totalCount = err ? 0 : count;
-  });
-
-  if (!totalCount) return callback("No Document in Database..", null);
-
-  this.find()
-    .skip(skip)
-    .limit(10)
-    .exec(function (err, docs) {
-      if (err) return callback("Error Occured", null);
-
-      if (!docs) return callback("Docs Not Found", null);
-
-      return callback(null, {
-        totalRecords: totalCount,
-        page: pageNo,
-        nextPage: pageNo + 1,
-        result: docs,
-      });
-    });
-};
-
 const PostModel = model("Post", PostSchema, "posts");
 module.exports = PostModel;

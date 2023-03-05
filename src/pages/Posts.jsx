@@ -43,12 +43,14 @@ const MARKS = [
 
 export default function Posts() {
   const {
-    posts,
+    data,
+    hasMore,
     isOpen,
     toggleOpen,
     fetchMorePosts,
     changeColumns,
     totalColumns,
+    ...args
   } = usePosts();
   const isTablet = useMediaQuery("max-width: 1200px");
   return (
@@ -71,11 +73,7 @@ export default function Posts() {
         },
       })}
     >
-      <Box
-        className="mt-3 px-2 mx-auto"
-        component="main"
-        sx={{ maxWidth: "1400px" }}
-      >
+      <Box className="mt-3 px-2 mx-auto" sx={{ maxWidth: "1400px" }}>
         <Title
           className="title"
           order={1}
@@ -152,9 +150,9 @@ export default function Posts() {
         </Box>
 
         <PostList
-          posts={posts}
-          totalColumns={totalColumns}
-          fetchMorePosts={fetchMorePosts}
+          posts={data.posts}
+          dataLength={data?.totalPages}
+          {...{ hasMore, totalColumns, fetchMorePosts, ...args }}
         >
           <UploadModal {...{ isOpen, toggleOpen }} />
         </PostList>
