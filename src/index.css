@@ -14,7 +14,6 @@
   font-family: "Tilt Warp", cursive !important;
 }
 
-
 .post {
   width: 100% !important;
   height: auto !important;
@@ -29,9 +28,10 @@
 
 .loaded {
   filter: none !important;
+  transform: scale(1) !important;
 }
 
-.preview-image{
+.preview-image {
   object-fit: cover;
   width: 100%;
   max-width: calc((500px / 4) + 2rem);
@@ -39,7 +39,7 @@
   cursor: pointer;
 }
 
-.selected{
+.selected {
   padding: 5px;
 }
 

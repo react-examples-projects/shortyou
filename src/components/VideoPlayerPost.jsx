@@ -99,11 +99,13 @@ const VideoPlayerPost = ({
           alt={title}
           title={title}
           style={{
-            filter: "blur(1px)",
+            transform: "scale(1.1)",
+            filter: "blur(4px)",
             marginTop: "-1px",
             objectFit: "cover",
             top: "1px",
             zIndex: 2,
+            transition: "transform 400ms ease-out",
           }}
         />
 

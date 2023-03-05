@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 import {
   AppShell,
   Navbar,
@@ -14,17 +13,12 @@ import {
 } from "@mantine/core";
 import { BiSearchAlt2 } from "react-icons/bi";
 import { VscSettings } from "react-icons/vsc";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import VideoPlayerPost from "../components/VideoPlayerPost";
-import useToggle from "../hooks/useToggle";
-import axios from "axios";
 import UploadModal from "../components/UploadModal";
+import usePosts from "../hooks/usePosts";
+import PostList from "../components/PostList";
+import useMediaQuery from "../hooks/useMediaQuery";
 
 const MARKS = [
-  {
-    value: 0,
-    label: "0 columns",
-  },
   {
     value: 10,
     label: "1 columns",
@@ -45,47 +39,29 @@ const MARKS = [
     value: 50,
     label: "5 columns",
   },
-  {
-    value: 60,
-    label: "6 columns",
-  },
 ];
 
-const fetchPosts = async () => {
-  const res = await axios.get("http://localhost:5000/api/post");
-  const posts = res.data?.data;
-  return posts;
-};
-
 export default function Posts() {
-  const [posts, setPosts] = useState([]);
-  const [totalColumns, setTotalColumns] = useState(5);
-  const columnsCached = useRef([]);
-  const [isOpen, toggleOpen] = useToggle();
-
-  useEffect(() => {
-    (async () => {
-      const posts = await fetchPosts();
-      columnsCached.current = posts.map((post) => (
-        <VideoPlayerPost {...post} key={post._id} />
-      ));
-      setPosts(posts);
-    })();
-  }, []);
-
+  const {
+    posts,
+    isOpen,
+    toggleOpen,
+    fetchMorePosts,
+    changeColumns,
+    totalColumns,
+  } = usePosts();
+  const isTablet = useMediaQuery("max-width: 1200px");
   return (
     <AppShell
       padding="md"
       navbar={
-        <Navbar width={{ base: 200 }} p="xs" sx={{ background: "transparent" }}>
-          {/* Navbar content */}
-        </Navbar>
+        <Navbar
+          width={{ base: 200 }}
+          p="xs"
+          sx={{ background: "transparent" }}
+        ></Navbar>
       }
-      header={
-        <Header height={60} p="xs">
-          {/* Header content */}
-        </Header>
-      }
+      header={<Header height={60} p="xs"></Header>}
       styles={(theme) => ({
         main: {
           backgroundColor:
@@ -95,7 +71,11 @@ export default function Posts() {
         },
       })}
     >
-      <main className="mt-3 px-2">
+      <Box
+        className="mt-3 px-2 mx-auto"
+        component="main"
+        sx={{ maxWidth: "1400px" }}
+      >
         <Title
           className="title"
           order={1}
@@ -154,39 +134,31 @@ export default function Posts() {
             </Button>
           </Flex>
 
-          <Slider
-            radius="xl"
-            label={(val) => MARKS.find((mark) => mark.value === val).label}
-            defaultValue={50}
-            step={10}
-            min={10}
-            max={60}
-            onChangeEnd={(value) => setTotalColumns(value / 10)}
-            //marks={MARKS}
-            styles={{ markLabel: { display: "none" } }}
-            sx={{ maxWidth: "300px" }}
-            mt="2rem"
-            mx="auto"
-          />
+          {!isTablet && (
+            <Slider
+              radius="xl"
+              label={(val) => MARKS.find((mark) => mark.value === val).label}
+              defaultValue={40}
+              step={10}
+              min={10}
+              max={50}
+              onChangeEnd={changeColumns}
+              styles={{ markLabel: { display: "none" } }}
+              sx={{ maxWidth: "300px" }}
+              mt="2rem"
+              mx="auto"
+            />
+          )}
         </Box>
 
-        {posts.length > 0 && (
-          <ResponsiveMasonry
-            className="mt-4 "
-            columnsCountBreakPoints={{ 350: 1, 750: 2, 900: totalColumns }}
-          >
-            <Masonry gutter="8px">
-              {posts.map((post) => (
-                <article key={post._id}>
-                  <VideoPlayerPost {...post} />
-                </article>
-              ))}
-            </Masonry>
-          </ResponsiveMasonry>
-        )}
-
-        <UploadModal {...{ isOpen, toggleOpen }} />
-      </main>
+        <PostList
+          posts={posts}
+          totalColumns={totalColumns}
+          fetchMorePosts={fetchMorePosts}
+        >
+          <UploadModal {...{ isOpen, toggleOpen }} />
+        </PostList>
+      </Box>
     </AppShell>
   );
 }
