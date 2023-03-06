@@ -2,16 +2,19 @@ import { generateVideoThumbnails } from "@rajesh896/video-thumbnails-generator";
 import { useState, useEffect, useRef } from "react";
 import { AiOutlineCloudUpload, AiOutlineDelete } from "react-icons/ai";
 import { fileToBase64 } from "../helpers/utils";
-import { Box, Text } from "@mantine/core";
+import { Box, Text, Skeleton, Alert, Code } from "@mantine/core";
 import cls from "classnames";
 const noop = () => undefined;
 
 export default function VideoPreviewPictures({
   videoFile,
+  destroy = false,
   onChangePreviewPicture = noop,
   onChangePreviewPictures = noop,
   ...props
 }) {
+  const [isLoading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [previewPictures, setPreviewPictures] = useState([]);
   const [customPreviewPicture, setCustomPreviewPicture] = useState("");
   const inputFileRef = useRef(null);
@@ -29,22 +32,45 @@ export default function VideoPreviewPictures({
   };
 
   useEffect(() => {
+    if (destroy) setPreviewPictures([]);
+  }, [destroy]);
+
+  useEffect(() => {
     (async () => {
       if (!videoFile) return;
-
-      const previewPictures = await generateVideoThumbnails(videoFile, 3);
-      setPreviewPictures(previewPictures);
-      onChangePreviewPictures(previewPictures);
+      try {
+        setLoading(true);
+        const previewPictures = await generateVideoThumbnails(videoFile, 3);
+        setPreviewPictures(previewPictures);
+        onChangePreviewPictures(previewPictures);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, [videoFile]);
-
-  if (previewPictures.length < 1) return null;
 
   return (
     <Box className="w-100" {...props}>
       <label htmlFor="" style={{ fontSize: "14px" }}>
         Post preview
       </label>
+
+      {previewPictures.length < 1 && !isLoading && !error && (
+        <Alert title="Select a video" className="my-2">
+          Please, select a video to generate the previews thumbails
+        </Alert>
+      )}
+
+      {error && (
+        <Alert title="Somenthing went wrong" className="my-2">
+          <Text>Somenthing went wrong while generating the previews.</Text>
+          <Text className="mt-2">
+            <Code>Error code: {error.toString()}</Code>
+          </Text>
+        </Alert>
+      )}
 
       {!customPreviewPicture ? (
         <Box
@@ -61,17 +87,31 @@ export default function VideoPreviewPictures({
             },
           }}
         >
-          {previewPictures.map((previewPic, index) => (
-            <img
-              key={index}
-              src={previewPic}
-              onClick={() => onChangePreviewPicture(previewPic)}
-              className={cls("preview-image", {
-                selected: false,
-              })}
-              alt="Preview picture for the video"
-            />
-          ))}
+          {isLoading
+            ? Array(4)
+                .fill(0)
+                .map((_, i) => (
+                  <Skeleton
+                    key={i}
+                    className="preview-image"
+                    height="250px"
+                    sx={{
+                      cursor: "default",
+                      flex: "1 0  calc((500px / 4) + 2rem)",
+                    }}
+                  />
+                ))
+            : previewPictures.map((previewPic, index) => (
+                <img
+                  key={index}
+                  src={previewPic}
+                  onClick={() => onChangePreviewPicture(previewPic)}
+                  className={cls("preview-image", {
+                    selected: false,
+                  })}
+                  alt="Preview picture for the video"
+                />
+              ))}
         </Box>
       ) : (
         <>

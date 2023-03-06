@@ -25,7 +25,8 @@ import {
 
 function UploadModal({ isOpen, toggleOpen, addPost }) {
   const theme = useMantineTheme();
-  const { errors, reset, handleSubmit, register } = useFormValidation(postSchema);
+  const { errors, reset, handleSubmit, register } =
+    useFormValidation(postSchema);
   const { create, isLoading, error } = usePostCreate();
   const [videoFile, setVideoFile] = useState(null);
   const [previewVideo, setPreviewVideo] = useState("");
@@ -171,6 +172,7 @@ function UploadModal({ isOpen, toggleOpen, addPost }) {
             onChangePreviewPicture={onChangePreviewPicture}
             onChangePreviewPictures={onChangePreviewPictures}
             videoFile={videoFile}
+            destroy={videoFile === null}
           />
         )}
 
@@ -209,7 +211,11 @@ function UploadModal({ isOpen, toggleOpen, addPost }) {
           type="submit"
           className="mt-3"
           loading={isLoading}
-          disabled={isLoading}
+          disabled={
+            isLoading ||
+            previewPictures.length < 1 ||
+            Object.keys(errors).length
+          }
           fullWidth
         >
           Create Post
