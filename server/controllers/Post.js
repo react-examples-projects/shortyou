@@ -44,6 +44,12 @@ class PostController {
     try {
       const { name, data: videoBuffer, size, mimetype } = req.files.file;
 
+      if (!videoBuffer) {
+        return error(res, {
+          message: "Video is required",
+        });
+      }
+
       if (isNotValidFileType(mimetype)) {
         return error(res, {
           message: "Video type is invalid o not allowed, check the mime-type",
@@ -104,6 +110,18 @@ class PostController {
 
       const out = await post.save();
       success(res, out, 201);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async search(req, res, next) {
+    try {
+      let searchQuery = decodeURIComponent(req.query.query);
+      const posts = await PostModel.find({
+        title: { $regex: searchQuery, $options: "i" },
+      }).lean();
+      success(res, posts);
     } catch (err) {
       next(err);
     }

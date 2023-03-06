@@ -2,11 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import Routers from "./Routers";
 import { SWRConfig } from "swr";
-
+import { ToastContainer } from "react-toastify";
 import { MantineProvider } from "@mantine/core";
 
 import "./index.css";
 import "./utils.css";
+import "react-toastify/dist/ReactToastify.css";
 
 const config = {
   revalidateOnFocus: false,
@@ -26,5 +27,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Routers />
       </SWRConfig>
     </MantineProvider>
+    <ToastContainer
+      position="top-right"
+      autoClose={3000}
+      theme="colored"
+      closeOnClick  
+    />
   </React.StrictMode>
 );

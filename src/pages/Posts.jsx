@@ -41,11 +41,15 @@ export default function Posts() {
   const {
     posts,
     isOpen,
+    addPost,
     toggleOpen,
     changeColumns,
     totalColumns,
     isLoading,
     error,
+    onChangeSearch,
+    search,
+    searchPosts,
   } = usePosts();
   const isTablet = useMediaQuery("max-width: 1200px");
   return (
@@ -70,6 +74,7 @@ export default function Posts() {
         >
           ShortYou
         </Title>
+
         <Text c="dimmed" sx={{ fontSize: "18px", textAlign: "center" }}>
           Find your favorite videos and share them with yours friends
         </Text>
@@ -82,6 +87,8 @@ export default function Posts() {
               placeholder="Write something here ..."
               radius="xl"
               size="md"
+              value={search}
+              onChange={onChangeSearch}
               wrapperProps={{
                 style: { width: "100%" },
               }}
@@ -103,6 +110,7 @@ export default function Posts() {
               variant="outline"
               radius="xl"
               mt="1rem"
+              onClick={searchPosts}
               sx={{ maxWidth: "150px" }}
             >
               Search
@@ -121,24 +129,28 @@ export default function Posts() {
           </Flex>
 
           {!isTablet && (
-            <Slider
-              radius="xl"
-              label={(val) => MARKS.find((mark) => mark.value === val).label}
-              defaultValue={40}
-              step={10}
-              min={20}
-              max={50}
-              onChangeEnd={changeColumns}
-              styles={{ markLabel: { display: "none" } }}
-              sx={{ maxWidth: "300px" }}
-              mt="2rem"
-              mx="auto"
-            />
+            <>
+              <label className="d-block mb-2 mt-4 mx-auto text-center">
+                Columns ({totalColumns})
+              </label>
+              <Slider
+                radius="xl"
+                label={(val) => MARKS.find((mark) => mark.value === val).label}
+                defaultValue={40}
+                step={10}
+                min={20}
+                max={50}
+                onChangeEnd={changeColumns}
+                styles={{ markLabel: { display: "none" } }}
+                sx={{ maxWidth: "300px" }}
+                mx="auto"
+              />
+            </>
           )}
         </Box>
 
         <PostList posts={posts} {...{ totalColumns, isLoading, error }}>
-          <UploadModal {...{ isOpen, toggleOpen }} />
+          <UploadModal {...{ isOpen, toggleOpen, addPost }} />
         </PostList>
       </Box>
     </AppShell>

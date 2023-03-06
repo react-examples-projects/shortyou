@@ -1,6 +1,17 @@
 import { enUS } from "date-fns/locale";
 import { formatDistanceToNowStrict } from "date-fns";
 
+export function isFileTooLarge(sizeImage) {
+  const SIZE_ALLOWED = 10; // Mb
+  const size = (sizeImage / (1024 * 1024)).toFixed(2);
+  return size > SIZE_ALLOWED;
+}
+
+export function isNotValidFileType(mimeType) {
+  const SUPPORTED_FORMATS = ["video/mp4", "video/webm"];
+  return !SUPPORTED_FORMATS.includes(mimeType);
+}
+
 export function getFormattedDistanceToNow(date) {
   const options = {
     locale: {
@@ -67,4 +78,20 @@ export function generateId(len) {
   const arr = new Uint8Array((len || 40) / 2);
   window.crypto.getRandomValues(arr);
   return Array.from(arr, dec2hex).join("");
+}
+
+export function getError(
+  error = {},
+  defaultError = "Ocurrió un error, intente más tarde."
+) {
+  const { message, response } = error;
+  if (response?.data?.data?.message) {
+    return response?.data?.data?.message;
+  }
+
+  if (response?.data) {
+    return response?.data.data;
+  }
+  
+  return message || defaultError;
 }

@@ -1,51 +1,88 @@
-import axios from "axios";
 import TagsInput from "./InputTags";
 import ReactPlayer from "react-player";
 import useFormValidation from "../hooks/useFormValidation";
+import usePostCreate from "../hooks/usePostCreate";
 import VideoPreviewPictures from "./VideoPreviewPictures";
 import { postSchema } from "../helpers/schema";
-import { toFormDataObj } from "../helpers/utils";
+import { toast } from "react-toastify";
+import {
+  toFormDataObj,
+  isNotValidFileType,
+  isFileTooLarge,
+  getError,
+} from "../helpers/utils";
 import { BiUpload } from "react-icons/bi";
 import { useState } from "react";
 import {
   Modal,
   Button,
+  Alert,
   Input,
   FileInput,
   Textarea,
   useMantineTheme,
 } from "@mantine/core";
 
-function UploadModal({ isOpen, toggleOpen }) {
+function UploadModal({ isOpen, toggleOpen, addPost }) {
   const theme = useMantineTheme();
-  const { errors, reset, handleSubmit, register } =
-    useFormValidation(postSchema);
+  const { errors, reset, handleSubmit, register } = useFormValidation(postSchema);
+  const { create, isLoading, error } = usePostCreate();
   const [videoFile, setVideoFile] = useState(null);
   const [previewVideo, setPreviewVideo] = useState("");
   const [previewPicture, setPreviewPicture] = useState("");
   const [previewPictures, setPreviewPictures] = useState([]);
   const [tags, setTags] = useState([]);
-  const [isLoading, setLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [error, setError] = useState(null);
+  const [errorFile, setErrorFile] = useState(null);
 
   const onChangeTags = (tags) => setTags(tags);
 
   const onSubmit = async (e) => {
-    const fd = toFormDataObj({ ...e, tags });
-    if (previewPicture) {
-      fd.append("original", previewPicture);
-    } else {
-      fd.append("original", previewPictures[0]);
+    try {
+      if (!videoFile) return setErrorFile("The video is required");
+      setErrorFile(null);
+      const fd = toFormDataObj({
+        ...e,
+        tags: tags.length ? tags.map((t) => t.text) : [],
+      });
+
+      fd.append("file", videoFile);
+
+      if (previewPicture) {
+        fd.append("original", previewPicture);
+      } else {
+        fd.append("original", previewPictures[0]);
+      }
+      const post = await create(fd);
+      addPost(post);
+      reset();
+      setTags([]);
+      setVideoFile(null);
+      setPreviewVideo("");
+      setPreviewPicture("");
+      setPreviewPictures([]);
+      toast.success("Post has been created");
+    } catch (err) {
+      toast.error(getError(err));
     }
-    const res = await axios.post("http://localhost:5000/api/post", fd);
-    const post = res.data?.data;
   };
 
   const onChangeFile = async (file) => {
-    const preview = URL.createObjectURL(file);
-    setVideoFile(file);
-    setPreviewVideo(preview);
+    try {
+      if (isNotValidFileType(file.type)) {
+        throw new Error("The file type is not valid");
+      }
+
+      if (isFileTooLarge(file)) {
+        throw new Error("The file is too large to process it");
+      }
+      setErrorFile(null);
+      const preview = URL.createObjectURL(file);
+      setVideoFile(file);
+      setPreviewVideo(preview);
+    } catch (err) {
+      setVideoFile(null);
+      setErrorFile(err.message);
+    }
   };
 
   const onChangePreviewPicture = (preview) => setPreviewPicture(preview);
@@ -78,6 +115,7 @@ function UploadModal({ isOpen, toggleOpen }) {
             id="title"
             placeholder="Your awesome title"
             className="mt-2 mb-3"
+            disabled={isLoading}
           />
         </Input.Wrapper>
 
@@ -91,6 +129,7 @@ function UploadModal({ isOpen, toggleOpen }) {
           id="description"
           maxRows={8}
           minRows={6}
+          disabled={isLoading}
           error={errors.description?.message}
         />
 
@@ -106,6 +145,7 @@ function UploadModal({ isOpen, toggleOpen }) {
             onChangeTags={onChangeTags}
             id="tags"
             placeholder="Your awesome tags"
+            disabled={isLoading}
           />
         </div>
 
@@ -118,18 +158,23 @@ function UploadModal({ isOpen, toggleOpen }) {
             accept="video/mp4,video/webm"
             name="file"
             id="file"
+            value={videoFile}
             onChange={onChangeFile}
+            error={errorFile}
+            disabled={isLoading}
             required
           />
         </div>
 
-        <VideoPreviewPictures
-          onChangePreviewPicture={onChangePreviewPicture}
-          onChangePreviewPictures={onChangePreviewPictures}
-          videoFile={videoFile}
-        />
+        {!errorFile && (
+          <VideoPreviewPictures
+            onChangePreviewPicture={onChangePreviewPicture}
+            onChangePreviewPictures={onChangePreviewPictures}
+            videoFile={videoFile}
+          />
+        )}
 
-        {previewVideo && (
+        {previewVideo && !errorFile && (
           <div className="mt-3">
             <label
               htmlFor=""
@@ -153,7 +198,20 @@ function UploadModal({ isOpen, toggleOpen }) {
           </div>
         )}
 
-        <Button color="green" type="submit" className="mt-3" fullWidth>
+        {error && (
+          <Alert title="Something went wrong" color="red" className="my-3">
+            {getError(error)}
+          </Alert>
+        )}
+
+        <Button
+          color="green"
+          type="submit"
+          className="mt-3"
+          loading={isLoading}
+          disabled={isLoading}
+          fullWidth
+        >
           Create Post
         </Button>
       </form>

@@ -3,12 +3,15 @@ const { message } = require("../helpers/utils");
 const { DEV } = require("../config/variables").SERVER;
 
 function logErrors(err, req, res, next) {
-  message.error(err?.message);
-  message.error(err?.stack);
+  message.error(err?.message || err);
+  if (err?.stack) message.error(err?.stack);
 
-  const _error = {};
+  let _error = {};
   if (err?.stack && DEV) _error.stack = err.stack;
   if (err?.message) _error.description = err.message;
+  if (typeof err === "string") {
+    _error = err;
+  }
   error(res, _error, 500);
 }
 

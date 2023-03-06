@@ -50,7 +50,7 @@ const VideoPlayerPost = ({
 
   return (
     <div
-      title={title}
+      title="Click to see more"
       onMouseEnter={onMousehover}
       onMouseLeave={onMouseLeave}
       className="position-relative w-100 overflow-hidden"
