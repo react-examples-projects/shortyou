@@ -120,7 +120,9 @@ class PostController {
       let searchQuery = decodeURIComponent(req.query.query);
       const posts = await PostModel.find({
         title: { $regex: searchQuery, $options: "i" },
-      }).lean();
+      })
+        .sort({ createdAt: -1 })
+        .lean();
       success(res, posts);
     } catch (err) {
       next(err);

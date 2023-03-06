@@ -7,9 +7,7 @@ export default function usePosts() {
   const [totalColumns, setTotalColumns] = useState(5);
   const [isOpen, toggleOpen] = useToggle();
   const [posts, setPosts] = useState([]);
-
   const [postsRender, setPostsRender] = useState([]);
-
   const [search, setSearch] = useState("");
   const { data, error, isLoading } = useSWR("posts", fetchPosts);
 
@@ -24,16 +22,20 @@ export default function usePosts() {
     const term = e.target.value.trim();
     if (!term) {
       setPosts(postsRender);
-    } else {
-      setSearch(e.target.value);
     }
+    setSearch(e.target.value);
   };
 
-  const searchPosts = async () => {
+  const searchPosts = useCallback(async () => {
     if (!search) return;
-    
+
     const _posts = await _searchPosts(search);
     if (_posts?.length) setPosts(_posts);
+  }, [search]);
+
+  const clearSerach = () => {
+    setSearch("");
+    setPosts(postsRender);
   };
 
   useEffect(() => {
@@ -55,5 +57,6 @@ export default function usePosts() {
     search,
     onChangeSearch,
     searchPosts,
+    clearSerach,
   };
 }

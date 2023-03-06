@@ -1,6 +1,5 @@
 import {
   AppShell,
-  Navbar,
   Header,
   Text,
   Title,
@@ -50,6 +49,7 @@ export default function Posts() {
     onChangeSearch,
     search,
     searchPosts,
+    clearSerach,
   } = usePosts();
   const isTablet = useMediaQuery("max-width: 1200px");
   return (
@@ -81,18 +81,34 @@ export default function Posts() {
 
         <Box sx={{ maxWidth: "800px" }} mx="auto" mt="2rem">
           <Flex justify="center" align="center">
-            <Input
-              icon={<BiSearchAlt2 style={{ fontSize: "18px" }} />}
-              variant="filled"
-              placeholder="Write something here ..."
-              radius="xl"
-              size="md"
-              value={search}
-              onChange={onChangeSearch}
-              wrapperProps={{
-                style: { width: "100%" },
-              }}
-            />
+            <Box sx={{ width: "600px" }}>
+              <Input
+                type="search"
+                icon={<BiSearchAlt2 style={{ fontSize: "18px" }} />}
+                variant="filled"
+                placeholder="Write something here ..."
+                radius="xl"
+                size="md"
+                value={search}
+                onChange={onChangeSearch}
+                wrapperProps={{
+                  style: { width: "100%" },
+                }}
+              />
+              <Text
+                color="blue.4"
+                className="d-inline-block mt-1 ms-1"
+                onClick={clearSerach}
+                fz="xs"
+                sx={{
+                  opacity: search ? 1 : 0,
+                  cursor: "pointer",
+                }}
+                underline
+              >
+                Clear search
+              </Text>
+            </Box>
             <ActionIcon
               radius="xl"
               ml="0.5rem"
