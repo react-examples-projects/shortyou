@@ -20,7 +20,9 @@ import {
   Input,
   FileInput,
   Textarea,
+  Text,
   useMantineTheme,
+  Code,
 } from "@mantine/core";
 
 function UploadModal({ isOpen, toggleOpen, addPost }) {
@@ -61,6 +63,7 @@ function UploadModal({ isOpen, toggleOpen, addPost }) {
       setPreviewVideo("");
       setPreviewPicture("");
       setPreviewPictures([]);
+      toggleOpen();
       toast.success("Post has been created");
     } catch (err) {
       toast.error(getError(err));
@@ -142,6 +145,11 @@ function UploadModal({ isOpen, toggleOpen, addPost }) {
           >
             Tags post
           </label>
+
+          <Text c="dimmed" fz="xs" className="my-1">
+            Press <Code>ENTER</Code> to add a tag
+          </Text>
+
           <TagsInput
             onChangeTags={onChangeTags}
             id="tags"

@@ -1,3 +1,4 @@
+
 * {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif !important;
   margin: 0;
@@ -46,8 +47,7 @@
     left 90%,
     left bottom,
     from(rgba(0, 0, 0, 0.671)),
-    to(rgba(0, 0, 0, 0)),
-    
+    to(rgba(0, 0, 0, 0))
   );
 }
 
@@ -64,8 +64,9 @@
   cursor: pointer;
 }
 
-.selected {
-  padding: 5px;
+.preview-image.selected {
+  opacity: 0.3;
+  border: 3px solid greenyellow;
 }
 
 .player-wrapper {

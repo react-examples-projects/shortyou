@@ -7,6 +7,7 @@ import { MantineProvider } from "@mantine/core";
 
 import "./index.css";
 import "./utils.css";
+import "video-react/dist/video-react.css";
 import "react-toastify/dist/ReactToastify.css";
 
 const config = {

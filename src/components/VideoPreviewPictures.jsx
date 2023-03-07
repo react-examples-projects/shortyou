@@ -16,6 +16,7 @@ export default function VideoPreviewPictures({
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [previewPictures, setPreviewPictures] = useState([]);
+  const [prevewPicture, setPreviewPicture] = useState("");
   const [customPreviewPicture, setCustomPreviewPicture] = useState("");
   const inputFileRef = useRef(null);
 
@@ -24,6 +25,12 @@ export default function VideoPreviewPictures({
     const img = await fileToBase64(file);
     setCustomPreviewPicture(img);
     onChangePreviewPicture(img);
+  };
+
+  const _onChangePreviewPicture = (previewPic) => {
+    console.log({ previewPic });
+    onChangePreviewPicture(previewPic);
+    setPreviewPicture(previewPic);
   };
 
   const deleteImage = () => {
@@ -105,9 +112,9 @@ export default function VideoPreviewPictures({
                 <img
                   key={index}
                   src={previewPic}
-                  onClick={() => onChangePreviewPicture(previewPic)}
+                  onClick={() => _onChangePreviewPicture(previewPic)}
                   className={cls("preview-image", {
-                    selected: false,
+                    selected: prevewPicture === previewPic,
                   })}
                   alt="Preview picture for the video"
                 />
