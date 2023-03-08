@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_HOST = "http://localhost:5000/api/"; //"https://shortyou-api.vercel.app/api/";
+const API_HOST = "https://shortyou-api.vercel.app/api/";//"http://localhost:5000/api/"; //
 
 export const fetchPosts = async () => {
   const res = await axios.get(API_HOST + "post");
