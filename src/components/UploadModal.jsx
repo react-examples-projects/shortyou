@@ -10,6 +10,7 @@ import {
   isNotValidFileType,
   isFileTooLarge,
   getError,
+  base64ToFile,
 } from "../helpers/utils";
 import { BiUpload } from "react-icons/bi";
 import { useState } from "react";
@@ -43,18 +44,17 @@ function UploadModal({ isOpen, toggleOpen, addPost }) {
     try {
       if (!videoFile) return setErrorFile("The video is required");
       setErrorFile(null);
+      const preview = previewPicture || previewPictures[0];
+      const original = await base64ToFile(preview);
+      console.log({ original });
       const fd = toFormDataObj({
         ...e,
         tags: tags.length ? tags.map((t) => t.text) : [],
       });
 
       fd.append("file", videoFile);
+      fd.append("original", original);
 
-      if (previewPicture) {
-        fd.append("original", previewPicture);
-      } else {
-        fd.append("original", previewPictures[0]);
-      }
       const post = await create(fd);
       addPost(post);
       reset();

@@ -12,6 +12,18 @@ export function isNotValidFileType(mimeType) {
   return !SUPPORTED_FORMATS.includes(mimeType);
 }
 
+export async function base64ToFile(
+  url,
+  filename = "original.png",
+  mimeType = "image/png"
+) {
+  const res = await fetch(url);
+  const buffer = await res.arrayBuffer();
+  const file = new File([buffer], filename, { type: mimeType });
+  return file;
+}
+
+
 export function getFormattedDistanceToNow(date) {
   const options = {
     locale: {
@@ -89,8 +101,8 @@ export function getError(
     return response?.data?.data?.message;
   }
 
-  if (response?.data) {
-    return response?.data.data;
+  if (response?.data?.data?.description) {
+    return response?.data.data?.description;
   }
   
   return message || defaultError;
